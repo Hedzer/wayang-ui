@@ -18,71 +18,41 @@ abstract class Wayang extends HTMLElement {
 	constructor() {
 		super();
 		this._class = (<any>this).constructor;
-		const cache = ELEMENT_CACHE[this._class.tag];
-		this._root = this.attachShadow(this._class.mode);
+		const cache = <CacheItem>ELEMENT_CACHE.get(this._class['tag']);
+		this._root = this.attachShadow(this._class['mode']);
 		this._root.appendChild(cache.template.content.cloneNode(true));
-		this.receive(EmitMethod.POST, `@wayang/styles/${ this._class.tag }`, res => this.setStyle(res.data));
+		this._root.appendChild(cache.styles.content.cloneNode(true));
+		this.receive(EmitMethod.POST, `@wayang/styles/${ this._class['tag'] }`, res => this.setStyle(res.data));
 	}
 
 	// static members 
-	public static get tag(): string {
-		throw new Error(
-			'static tag: string, must be redefined.\n\
-			String must be a valid custom element tag.'
-		);
-	}
 
-	public static get html(): string {
-		throw new Error(
-			'static html: string, must be redefined.'
-		);
-	}
-
-	public static get css(): string {
-		throw new Error(
-			'static css: string, must be redefined.'
-		);
-	}
-
-	public static get mode(): ShadowRootInit {
-		return DEFAULT_SHADOWMODE;
-	}
-
-	public static get observed(): Map<string, keyof Converters | typeof Converters> {
-		throw new Error(
-			'static observed: Map<string, keyof Converters>, must be redefined.'
-		);
-	}
-
-	public static get converters(): Converters {
-		return CONVERTERS;
-	}
 
 	// required shadow element members
 	public static get observedAttributes(): string[] { 
-		return ELEMENT_CACHE[this.tag].observedAttributes;
+		return (<CacheItem>ELEMENT_CACHE.get(this['tag'])).observedAttributes;
 	}
 
 	connectedCallback() {
 		this.dispatch('connected', this);
-		this.broadcast(EmitMethod.POST, `@wayang/element/connected/${ this._class.tag }`, this);
+		this.broadcast(EmitMethod.POST, `@wayang/element/connected/${ this._class['tag'] }`, this);
 	}
 
 	adoptedCallback() {
 		this.dispatch('adopted', this);
-		this.broadcast(EmitMethod.POST, `@wayang/element/disconnected/${ this._class.tag }`, this);
+		this.broadcast(EmitMethod.POST, `@wayang/element/disconnected/${ this._class['tag'] }`, this);
 	}
 
 	disconnectedCallback() {
 		this.dispatch('disconnected', this);
-		this.broadcast(EmitMethod.POST, `@wayang/element/disconnected/${ this._class.tag }`, this);
+		this.broadcast(EmitMethod.POST, `@wayang/element/disconnected/${ this._class['tag'] }`, this);
 		this.destructor();
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
 		if (oldValue === newValue) { return; }
 
-		const converter = (CONVERTERS[this._class.observed[name]] || CONVERTERS.string);
+		const converter = (CONVERTERS[this._class['observed'][name]] || CONVERTERS.string);
 		this[name] = converter(newValue);
 	}
 
@@ -118,7 +88,7 @@ abstract class Wayang extends HTMLElement {
 		}
 
 		if (!this._handles.has(eventName)) {
-			this._handles.set(eventName, router.send[method](eventName));
+			this._handles.set(eventName, router.send[method.toLocaleLowerCase()](eventName));
 		}
 		(<SenderHandle>this._handles.get(eventName)).request(data);
 	}
@@ -129,7 +99,7 @@ abstract class Wayang extends HTMLElement {
 		}
 
 		if (!this._handles.has(eventName)) {
-			this._handles.set(eventName, router.send[method](eventName));
+			this._handles.set(eventName, router.send[method.toLocaleLowerCase()](eventName));
 		}
 		(<SenderHandle>this._handles.get(eventName)).receive(listener);
 	}
@@ -183,20 +153,60 @@ abstract class Wayang extends HTMLElement {
 	}
 
 	public static register() {
-		const tag = this.tag;
+
+		// we have to do it this way, because TS can't overwrite static properties
+		if (!this.hasOwnProperty('tag')) {
+			throw new Error(
+				'static tag: string, must be redefined.\n\
+				String must be a valid custom element tag.'
+			);
+		}
+
+		if (!this.hasOwnProperty('html')) {
+			throw new Error(
+				'static html: string, must be redefined.'
+			);			
+		}
+
+		if (!this.hasOwnProperty('css')) {
+			throw new Error(
+				'static css: string, must be redefined.'
+			);
+		}
+
+		if (!this.hasOwnProperty('mode')) {
+			Object.defineProperty(this, 'mode', {
+				value: DEFAULT_SHADOWMODE,
+				writable: true
+			});
+		}
+
+		if (!this.hasOwnProperty('observed')) {
+			throw new Error(
+				'static observed: Map<string, keyof Converters>, must be redefined.'
+			);
+		}
+
+		if (!this.hasOwnProperty('converters')) {
+			Object.defineProperty(this, 'converters', {
+				value: CONVERTERS,
+				writable: true
+			});
+		}
+
+		const tag = this['tag'];
 		if (ELEMENT_CACHE.has(tag)) { return; }
 
 		// template
 		const template = document.createElement('template');
-		template.innerHTML = this.html;
+		template.innerHTML = this['html'];
 
 		// styles
-		const styles = document.createElement('style');
-		styles.type = 'text/css';
-		styles.appendChild(document.createTextNode(this.css));
+		const styles = document.createElement('template');
+		styles.innerHTML = `<style type="text/css">\n${ this['css'] }\n</style>`;
 
 		// observed props
-		const properties = [ ...this.observed.keys() ];
+		const properties = [ ...this['observed'].keys() ];
 		properties.push('disabled', 'hidden', 'presenter');
 		
 		const cache = new CacheItem(
@@ -204,16 +214,16 @@ abstract class Wayang extends HTMLElement {
 			template,
 			styles,
 			this,
-			this.converters,
+			this['converters'],
 			properties,
-			this.observed
+			this['observed']
 		);
 
 		ELEMENT_CACHE.set(tag, cache);
 		customElements.define(tag, this);
 		const handle = router
 			.send
-			.post(`@wayang/element/registered/${ this.tag }`, this);
+			.post(`@wayang/element/registered/${ tag }`, this);
 		setTimeout(() => { handle.remove(); }, 1000);
 	}
 }

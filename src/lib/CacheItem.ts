@@ -5,7 +5,7 @@ class CacheItem {
 	constructor(
 		tag: string,
 		template: HTMLTemplateElement,
-		styles: HTMLStyleElement,
+		styles: HTMLTemplateElement,
 		$class: typeof Wayang,
 		converters: Converters | typeof Converters,
 		observedAttributes: string[],
@@ -20,7 +20,7 @@ class CacheItem {
 		this.properties = properties;
 	}
 	public readonly template: HTMLTemplateElement;
-	public readonly styles: HTMLStyleElement;
+	public readonly styles: HTMLTemplateElement;
 	public readonly tag: string;
 	public readonly class: typeof Wayang;
 	public readonly converters: Converters | typeof Converters;
