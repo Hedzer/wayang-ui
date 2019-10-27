@@ -203,7 +203,13 @@ abstract class Wayang extends HTMLElement {
 
 		// styles
 		const styles = document.createElement('template');
-		styles.innerHTML = `<style type="text/css">\n${ this['css'] }\n</style>`;
+		let css = this['css'];
+		if (typeof css === 'string') { css = [css]; }
+		if (Array.isArray(css)) {
+			styles.innerHTML = css
+				.map(s => `<style type="text/css">\n${ s }\n</style>`)
+				.join('\n');
+		}
 
 		// observed props
 		const properties = [ ...this['observed'].keys() ];
