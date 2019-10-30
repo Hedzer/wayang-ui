@@ -8,11 +8,13 @@ import Presenter from './Presenter';
 import Response from 'pubsub-router/dist/lib/Response';
 import Request from 'pubsub-router/dist/lib/Request';
 import EmitMethod from './EmitMethod';
+import { throws } from 'assert';
 
 abstract class Wayang extends HTMLElement {
 	private _root: ShadowRoot;
 	private _handles = new Map<string, SenderHandle>();
-	private _presenter: typeof Presenter | Presenter | null = null;
+	private _presenter: Presenter | null = null;
+	private _presenter_id: string = '';
 	private _class: typeof Wayang;
 
 	constructor() {
@@ -22,11 +24,7 @@ abstract class Wayang extends HTMLElement {
 		this._root = this.attachShadow(this._class['mode']);
 		this._root.appendChild(cache.template.content.cloneNode(true));
 		this._root.appendChild(cache.styles.content.cloneNode(true));
-		this.receive(EmitMethod.POST, `@wayang/styles/${ this._class['tag'] }`, res => this.setStyle(res.data));
 	}
-
-	// static members 
-
 
 	// required shadow element members
 	public static get observedAttributes(): string[] { 
@@ -104,43 +102,47 @@ abstract class Wayang extends HTMLElement {
 		(<SenderHandle>this._handles.get(eventName)).receive(listener);
 	}
 
-	public dispatch<T>(eventName: string, data: T) {
-		this.dispatchEvent(new CustomEvent<T>(eventName, new CustomEvent<T>(eventName, { detail: data })));
+	public dispatch<T>(eventName: string, data: T): boolean {
+		return this.dispatchEvent(new CustomEvent<T>(eventName, new CustomEvent<T>(eventName, { detail: data })));
 	}
-	public listen(eventName: string, listener: EventListenerOrEventListenerObject) {
+	public listen(eventName: string, listener: EventListenerOrEventListenerObject): void {
 		this.addEventListener(eventName, listener);
 	}
-
-	public select(selector: string): Element | null {
-		return this._root.querySelector(selector);
+	public unlisten(eventName: string, listener: EventListenerOrEventListenerObject): void {
+		this.removeEventListener(eventName, listener);
 	}
 
-	public setStyle(style: HTMLStyleElement) {
-		const existing = this.select(`#${style.id}`);
-		this._root.append(style);
-		if (existing) { this._root.removeChild(existing); }
+	public select(selector: string): NodeList | null {
+		return this._root.querySelectorAll(selector);
 	}
+	public part(partName: string): Element | null {
+		return this._root.querySelector(`[part='${partName}']`);
+	} 
 
 	// private instance methods
 	private removeOldPresenter() {
 		if (!this._presenter) { return; }
 
 		const presenter = this._presenter;
-		const key = `@wayang/presenters/${ presenter.name }`;
+		const key = `@wayang/presenters/${ this._presenter_id }`;
 		const handle = this._handles.get(key);
 		if (handle) {
 			handle.remove();
 			this._handles.delete(key);
 		}
+		presenter.disconnect();
+		this._presenter = null;
 	}
-	private setNewPresenter(name: string) {
-		const key = `@wayang/presenters/${ name }`;
+	private setNewPresenter(id: string) {
+		const key = `@wayang/presenters/${ id }`;
 		this.receive(EmitMethod.POST, key, (res) => {
 			const Presenter = <{ new() : Presenter }>res.data;
 			const presenter = new Presenter();
 			this._presenter = presenter;
+			this._presenter_id = id;
 			presenter.connect(this);
 		});
+		this.broadcast(EmitMethod.POST, key, this);
 	}
 
 	// special members
