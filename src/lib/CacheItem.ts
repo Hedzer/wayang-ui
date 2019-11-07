@@ -1,5 +1,5 @@
 import Wayang from './Wayang';
-import Converters from './Converters';
+import Plugin from './Plugin';
 
 class CacheItem {
 	constructor(
@@ -7,25 +7,26 @@ class CacheItem {
 		template: HTMLTemplateElement,
 		styles: HTMLTemplateElement,
 		$class: typeof Wayang,
-		converters: Converters | typeof Converters,
-		observedAttributes: string[],
-		properties: Map<string, keyof Converters | typeof Converters>
+		converters: Map<string, (string) => any>,
+		properties: Map<string, string>,
+		observed: string[],
 	) {
 		this.tag = tag;
 		this.template = template;
 		this.styles = styles;
 		this["class"] = $class;
 		this.converters = converters;
-		this.observedAttributes = observedAttributes;
 		this.properties = properties;
+		this.observed = observed;
 	}
 	public readonly template: HTMLTemplateElement;
 	public readonly styles: HTMLTemplateElement;
 	public readonly tag: string;
 	public readonly class: typeof Wayang;
-	public readonly converters: Converters | typeof Converters;
-	public readonly observedAttributes: string[];
-	public readonly properties: Map<string, keyof Converters | typeof Converters>;
+	public readonly converters: Map<string, (string) => any>;
+	public readonly observed: string[];
+	public readonly properties: Map<string, string>;
+	public readonly plugins: Map<string, Plugin> = new Map<string, Plugin>();
 }
 
 export default CacheItem;
