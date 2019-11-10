@@ -1,7 +1,10 @@
 
-import Wayang from './lib/Wayang';
+import WebComponent from './lib/WebComponent';
 import Presenter from './lib/Presenter';
+import Mixin from './lib/Mixin';
 
-export { Wayang };
+export { WebComponent };
 export { Presenter };
-export default Wayang;
+export { Mixin };
+
+export default WebComponent;

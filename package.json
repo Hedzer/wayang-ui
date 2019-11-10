@@ -1,6 +1,6 @@
 {
   "name": "wayang-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A simple MVP framework for making web components.",
   "keywords": [
     "ui",
@@ -17,8 +17,8 @@
   ],
   "prepublish": "tsc",
   "dependencies": {
-    "pubsub-router-global": "^0.2.0",
-    "tsc": "^1.20150623.0"
+    "tsc": "^1.20150623.0",
+    "whenthough": "^0.2.2"
   },
   "devDependencies": {
     "ava": "^2.3.0",

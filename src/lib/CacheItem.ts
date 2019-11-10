@@ -1,32 +1,32 @@
-import Wayang from './Wayang';
-import Plugin from './Plugin';
+import WebComponent from './WebComponent';
+import Mixin from './Mixin';
 
 class CacheItem {
 	constructor(
 		tag: string,
 		template: HTMLTemplateElement,
 		styles: HTMLTemplateElement,
-		$class: typeof Wayang,
-		converters: Map<string, (string) => any>,
+		component: typeof WebComponent,
+		converters: Map<string, (value: string) => any>,
 		properties: Map<string, string>,
 		observed: string[],
 	) {
 		this.tag = tag;
 		this.template = template;
 		this.styles = styles;
-		this["class"] = $class;
-		this.converters = converters;
-		this.properties = properties;
-		this.observed = observed;
+		this.component = component;
+		this.converters = new Map<string, (value: string) => any>(converters);
+		this.properties = new Map<string, string>(properties);
+		this.observed = observed.slice(0);
 	}
 	public readonly template: HTMLTemplateElement;
 	public readonly styles: HTMLTemplateElement;
 	public readonly tag: string;
-	public readonly class: typeof Wayang;
-	public readonly converters: Map<string, (string) => any>;
+	public readonly component: typeof WebComponent;
+	public readonly converters: Map<string, (value: string) => any>;
 	public readonly observed: string[];
 	public readonly properties: Map<string, string>;
-	public readonly plugins: Map<string, Plugin> = new Map<string, Plugin>();
+	public readonly mixins = new Map<string, typeof Mixin>();
 }
 
 export default CacheItem;
