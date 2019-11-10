@@ -15,23 +15,23 @@ import { WebComponent } from 'wayang-ui';
 
 class WayButton extends WebComponent {
 
-	// required properties
-	static tag = 'way-button'; 
-	static html = '<button></button>';
-	static css = 'button { background: red; width:100px; height:100px; }';
-	static observed = new Map([
-		[ 'counter', 'number' ] // binds element attribute and converts type
-	]);
-	
-	// user defined property, "counter"
-	private counter: number = 0;
-	public get counter(): number {
-		return this.getAttribute('counter');
-	}
-	public set counter(count: number) {
-		this.setAttribute('counter', count);
-		console.log(`Counter was set to ${ count }`)
-	}
+    // required properties
+    static tag = 'way-button'; 
+    static html = '<button></button>';
+    static css = 'button { background: red; width:100px; height:100px; }';
+    static observed = new Map([
+        [ 'counter', 'number' ] // binds element attribute and converts type
+    ]);
+    
+    // user defined property, "counter"
+    private counter: number = 0;
+    public get counter(): number {
+        return this.getAttribute('counter');
+    }
+    public set counter(count: number) {
+        this.setAttribute('counter', count);
+        console.log(`Counter was set to ${ count }`)
+    }
 }
 
 // registers the html tag <way-button>
@@ -49,20 +49,20 @@ The above would produce a 100px X 100px red button and print **"Counter was set 
 import { Presenter } from 'wayang-ui';
 
 class CounterPresenter extends Presenter {
-	
-	public static id = 'counter-presenter';
+    
+    public static id = 'counter-presenter';
 
-	connect(component: WebComponent) {
-		component.listen('click', this.onClick);
-	}
-	disconnect(component: WebComponent) {
-		component.unlisten('click', this.onClick);
-	}
-	onClick() {
-		this.counter = this.counter || 0;
-		this.counter += 1;
-		console.log(`Clicked ${ this.counter } times`);
-	}
+    connect(component: WebComponent) {
+        component.listen('click', this.onClick);
+    }
+    disconnect(component: WebComponent) {
+        component.unlisten('click', this.onClick);
+    }
+    onClick() {
+        this.counter = this.counter || 0;
+        this.counter += 1;
+        console.log(`Clicked ${ this.counter } times`);
+    }
 }
 
 // registers the presenter so it can be used with any component
@@ -88,36 +88,36 @@ The above html would result in the following:
 import { Mixin, WebComponent } from 'wayang-ui';
 
 class GreenButton extends Mixin {
-	public static id = 'green-button-mixin';
+    public static id = 'green-button-mixin';
 
-	// these happen at runtime
-	public static connect(component: WebComponent) {
-		// connect to the element at runtime
-	}
-	public static disconnect(component: WebComponent) {
-		// disconnect, undo runtime changes
-	}
+    // these happen at runtime
+    public static connect(component: WebComponent) {
+        // connect to the element at runtime
+    }
+    public static disconnect(component: WebComponent) {
+        // disconnect, undo runtime changes
+    }
 
-	// these happen once, on script execution
-	public static html(html: HTMLTemplateElement): void {
-		// add a new button
-		html.innerHTML += `<button green-button></button>`;
-	};
-	public static css(css: HTMLTemplateElement): void {
-		// make the button green
-		css.innerHTML += `<style id="green-button-mixin-css">[green-button] { background: green; }</style>`;
-	};
-	public static properties(properties: Map<string, string>): void {
-		// define conversion mapping for properties
-		properties.set('green-button-text', 'string');
-	};
-	public static observed(observed: string[]): void {
-		// let the component know to watch for change
-		observed.push('green-button-text');
-	};
-	public static converters(converters: Map<string, (value: string) => any>): void {
-		// no additional types are required
-	};
+    // these happen once, on script execution
+    public static html(html: HTMLTemplateElement): void {
+        // add a new button
+        html.innerHTML += `<button green-button></button>`;
+    };
+    public static css(css: HTMLTemplateElement): void {
+        // make the button green
+        css.innerHTML += `<style id="green-button-mixin-css">[green-button] { background: green; }</style>`;
+    };
+    public static properties(properties: Map<string, string>): void {
+        // define conversion mapping for properties
+        properties.set('green-button-text', 'string');
+    };
+    public static observed(observed: string[]): void {
+        // let the component know to watch for change
+        observed.push('green-button-text');
+    };
+    public static converters(converters: Map<string, (value: string) => any>): void {
+        // no additional types are required
+    };
 }
 
 GreenButton.register()
@@ -126,8 +126,8 @@ GreenButton.register()
 ### Attaching a Mixin to a Web Component
 ```javascript
 class WayButton extends WebComponent {
-	// other required properties
-	public static mixins = [ GreenButton ]; // from the example above
+    // other required properties
+    public static mixins = [ GreenButton ]; // from the example above
 }
 ```
 
@@ -190,12 +190,11 @@ import css from './button.css';
 import observed from './button.json';
 
 class WayButton extends WebComponent {
-	static tag = 'way-button'; 
-	static html = html;
-	static css = css;
-	static observed = new Map<string, string>(observed);
-
-	// user defined members
+    static tag = 'way-button'; 
+    static html = html;
+    static css = css;
+    static observed = new Map<string, string>(observed);
+    // user defined members
 }
 
 WayButton.register();
