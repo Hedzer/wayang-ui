@@ -120,6 +120,8 @@ class GreenButton extends Mixin {
 	};
 }
 
+GreenButton.register()
+
 ```
 ### Attaching a Mixin to a Web Component
 ```javascript
