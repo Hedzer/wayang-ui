@@ -55,8 +55,8 @@ abstract class WebComponent extends HTMLElement {
 	attributeChangedCallback(name: string, previous: string, current: string) {
 		if (previous === current) { return; }
 
-		clearTimeout(this.debouncers);
-		this.debouncers = setTimeout(() => {
+		clearTimeout(this.debouncers[name]);
+		this.debouncers[name] = setTimeout(() => {
 			const properties = this.class.cache.properties;
 			const converters = this.class.cache.converters;
 			const converter = (converters.get(properties.get(name) || 'string') || (v => v));
