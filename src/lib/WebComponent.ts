@@ -139,7 +139,7 @@ abstract class WebComponent extends HTMLElement {
 		COMPONENT_CACHE.set(this.tag, cache);
 		COMPONENTS.set(this.tag, this);
 		this.mixins.forEach(mixin => mixin.attach(this));
-		customElements.define(this.tag, this);
+		customElements.define(this.tag, <any>this);
 	
 		global.set(Symbol.for(`@wayang/web-components/${ this.tag }`), this);
 	}

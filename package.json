@@ -1,6 +1,6 @@
 {
   "name": "wayang-ui",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "A simple MVP framework for making web components.",
   "keywords": [
     "ui",
@@ -21,8 +21,8 @@
     "whenthough": "^0.2.2"
   },
   "devDependencies": {
-    "ava": "^2.3.0",
-    "typescript": "^3.6.2"
+    "ava": "^3.8.2",
+    "typescript": "^3.9.3"
   },
   "scripts": {
     "build": "tsc",
