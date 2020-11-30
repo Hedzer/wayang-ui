@@ -1,5 +1,5 @@
 {
-  "version": "0.2.7",
+  "version": "0.2.8",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -11,7 +11,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch",
+    "start": "tsdx watch --name WayangUI --format cjs,esm,umd --target node",
     "build": "tsdx build --name WayangUI --format cjs,esm,umd --target node",
     "test": "tsdx test",
     "lint": "tsdx lint",
