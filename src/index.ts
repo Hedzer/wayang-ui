@@ -1,4 +1,3 @@
-
 import WebComponent from './lib/WebComponent';
 import Presenter from './lib/Presenter';
 import Mixin from './lib/Mixin';

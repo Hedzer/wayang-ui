@@ -9,7 +9,7 @@ class CacheItem {
 		component: typeof WebComponent,
 		converters: Map<string, (value: string) => any>,
 		properties: Map<string, string>,
-		observed: string[],
+		observed: string[]
 	) {
 		this.tag = tag;
 		this.template = template;

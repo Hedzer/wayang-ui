@@ -200,4 +200,3 @@ class WayButton extends WebComponent {
 WayButton.register();
 ```
 This example works by using various scripts, declarations and build tools that enable static content to be imported like code. You can find the necessary code in `wayang-element-template` project on my github. The important parts are the `rollup.config.js` in the root, the declarations in `src/declarations` and the build / copy scripts in `package.json`.
-
